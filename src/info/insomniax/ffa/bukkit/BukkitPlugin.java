@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Material;
 
@@ -22,24 +23,28 @@ public class BukkitPlugin extends JavaPlugin{
 	public void onEnable()
 	{
 		ffaWorld = Bukkit.getWorld(FFA.WORLD_NAME);
+		this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		if(cmd.getName().equalsIgnoreCase("ffa"))
 		{
-			if(FFA.WARRIORS.contains(sender.getName()))
+			if(args.length == 0)
 			{
-				// They're too much of a wanker to enjoy our endearing bloodbath. Get their sorry ass out of here
-				FFA.WARRIORS.remove(sender.getName());
-				//TODO Remove player from FFA world, give him all his old shit, etc etc
-			}
-			else
-			{
-				// This player has a death wish.. GIVE THEM WHAT THEY WANT!
-				FFA.WARRIORS.add(sender.getName());
-				sender.sendMessage(summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(sender.getName()));
-				//TODO save sender's inv, location, and any other relevant info
+				if(FFA.ONLINE_WARRIORS.contains(sender.getName()))
+				{
+					// They're too much of a wanker to enjoy our endearing bloodbath. Get their sorry ass out of here
+					FFA.ONLINE_WARRIORS.remove(sender.getName());
+					//TODO Remove player from FFA world, give him all his old shit, etc etc
+				}
+				else
+				{
+					// This player has a death wish.. GIVE THEM WHAT THEY WANT!
+					FFA.ONLINE_WARRIORS.add(sender.getName());
+					sender.sendMessage(summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(sender.getName()));
+					//TODO save sender's inv, location, and any other relevant info
+				}
 			}
 		}
 		
@@ -50,7 +55,7 @@ public class BukkitPlugin extends JavaPlugin{
 	{
 		String beenWatchingTooManyBritishShowsLately = "";
 		
-		for(String warrior : FFA.WARRIORS)
+		for(String warrior : FFA.ONLINE_WARRIORS)
 		{
 			if(withinDist(bloke, warrior, FFA.RADAR_DISTANCE))
 			{

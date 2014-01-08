@@ -10,6 +10,7 @@ public class FFA {
 	public static int SPAWN_DISTANCE = 100; // Max distance away from a player newcomers can spawn
 	public static int RADAR_DISTANCE = 200; // Max distance away a player can be to report to newcomers
 	
-	public static List<String> WARRIORS = new ArrayList<String>(); // Names of all currently online and in battle players
+	public static List<String> ONLINE_WARRIORS = new ArrayList<String>(); // Names of all currently online and in battle players
+	public static List<String> WARRIORS = new ArrayList<String>(); // Names of all players in battle
 
 }
