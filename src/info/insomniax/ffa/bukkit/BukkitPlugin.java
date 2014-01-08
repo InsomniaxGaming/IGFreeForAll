@@ -27,7 +27,14 @@ public class BukkitPlugin extends JavaPlugin{
 	{
 		if(cmd.getName().equalsIgnoreCase("ffa"))
 		{
-			// This player has a death wish.. GIVE THEM WHAT THEY WANT!
+			if(FFA.WARRIORS.contains(sender.getName()))
+			{
+				// Remove player from FFA world, give him all his old shit, etc etc
+			}
+			else
+			{
+				// This player has a death wish.. GIVE THEM WHAT THEY WANT!
+			}
 		}
 		
 		return false;
@@ -68,8 +75,10 @@ public class BukkitPlugin extends JavaPlugin{
 		
 	}
 	
-	/**Find the lowest valid Y coordinate
-	 * @return first valid Y coordinate, or -1 if none was found*/
+	/**
+	 * Find the lowest valid Y coordinate
+	 * @return first valid Y coordinate, or -1 if none was found
+	 * */
 	public int findValidY(double x, double z)
 	{
 		int validY = -1;
