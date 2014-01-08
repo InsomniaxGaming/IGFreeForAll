@@ -1,5 +1,6 @@
 package info.insomniax.ffa.bukkit;
 
+import java.util.List;
 import java.util.Random;
 
 import info.insomniax.ffa.core.FFA;
@@ -29,15 +30,37 @@ public class BukkitPlugin extends JavaPlugin{
 		{
 			if(FFA.WARRIORS.contains(sender.getName()))
 			{
-				// Remove player from FFA world, give him all his old shit, etc etc
+				// They're too much of a wanker to enjoy our endearing bloodbath. Get their sorry ass out of here
+				FFA.WARRIORS.remove(sender.getName());
+				//TODO Remove player from FFA world, give him all his old shit, etc etc
 			}
 			else
 			{
 				// This player has a death wish.. GIVE THEM WHAT THEY WANT!
+				FFA.WARRIORS.add(sender.getName());
+				sender.sendMessage(summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(sender.getName()));
+				//TODO save sender's inv, location, and any other relevant info
 			}
 		}
 		
 		return false;
+	}
+	
+	public static String summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(String bloke)
+	{
+		String beenWatchingTooManyBritishShowsLately = "";
+		
+		for(String warrior : FFA.WARRIORS)
+		{
+			if(withinDist(bloke, warrior, FFA.RADAR_DISTANCE))
+			{
+				//TODO retrieve warrior's direction relative to "bloke" and include it in my oddly named string
+				String direction = "[direction]";
+				beenWatchingTooManyBritishShowsLately += warrior + direction + " ";
+			}
+		}
+		
+		return beenWatchingTooManyBritishShowsLately;
 	}
 	
 	public static boolean withinDist(String p1, String p2, double distance)
