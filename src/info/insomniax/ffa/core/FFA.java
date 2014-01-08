@@ -1,6 +1,6 @@
 package info.insomniax.ffa.core;
 
-public class InsomniaxForAll {
+public class FFA {
 	
 	public static String WORLD_NAME; // Name of the world to throw newbz' unsuspecting arses in
 	
