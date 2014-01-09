@@ -1,6 +1,5 @@
 package info.insomniax.ffa.bukkit;
 
-import java.util.List;
 import java.util.Random;
 
 import info.insomniax.ffa.core.FFA;
@@ -10,7 +9,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Material;
 
@@ -19,11 +17,15 @@ public class BukkitPlugin extends JavaPlugin{
 	Random random = new Random();
 	
 	World ffaWorld;
+	Permissions permissions;
 	
 	public void onEnable()
 	{
 		ffaWorld = Bukkit.getWorld(FFA.WORLD_NAME);
 		this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		
+		permissions = new Permissions(this);
+		permissions.setupPermissions();
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
@@ -44,6 +46,16 @@ public class BukkitPlugin extends JavaPlugin{
 					FFA.ONLINE_WARRIORS.add(sender.getName());
 					sender.sendMessage(summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(sender.getName()));
 					//TODO save sender's inv, location, and any other relevant info
+				}
+			}
+			else if(args.length > 1)
+			{
+				if(args[0].equalsIgnoreCase("world"))
+				{
+					if(args[1].equalsIgnoreCase("get"))
+					{
+						
+					}
 				}
 			}
 		}
