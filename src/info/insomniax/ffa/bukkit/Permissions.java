@@ -9,6 +9,16 @@ import net.milkbowl.vault.permission.Permission;
 
 public class Permissions {
 	
+	public enum FFAPerm
+	{
+		JOIN, 		// Join FFA
+		LEAVE, 		// Leave FFA
+		WORLDGET,	// Get the specified FFA world
+		WORLDSET	// Set the specified FFA world
+	}
+	
+	public static String permBase = "owh.ffa.base.";
+	
 	private static Permission permission = null;
     private static Economy economy = null;
     private static Chat chat = null;
@@ -54,6 +64,9 @@ public class Permissions {
     	return permission.has(player, node);
     }
     
-    
+    public static boolean has(Player player, FFAPerm perm)
+    {
+    	return permission.has(player, permBase + perm.toString().toLowerCase());
+    }
 
 }

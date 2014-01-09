@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Material;
 
@@ -48,13 +49,37 @@ public class BukkitPlugin extends JavaPlugin{
 					//TODO save sender's inv, location, and any other relevant info
 				}
 			}
-			else if(args.length > 1)
+			if(args.length > 1)
 			{
 				if(args[0].equalsIgnoreCase("world"))
 				{
-					if(args[1].equalsIgnoreCase("get"))
-					{
 						
+					if(args[1].equalsIgnoreCase("set"))
+					{
+						if(Permissions.has((Player)sender, Permissions.FFAPerm.WORLDSET))
+						{
+							if(args.length > 2)
+							{
+								//If player gave sufficient information, set world to the given argument
+								sender.sendMessage("FFA world set to " + args[2]);
+								FFA.WORLD_NAME = args[2];
+							}
+							else
+							{
+								//If there is no data other than "set", set the world to the world the player is standing in
+								FFA.WORLD_NAME = ((Player)sender).getWorld().getName();
+							}
+							
+							return true;
+						}
+					}
+					else if(args[1].equalsIgnoreCase("get"))
+					{
+						if(Permissions.has((Player)sender, Permissions.FFAPerm.WORLDGET))
+						{
+							sender.sendMessage("Current FFA world is [" + FFA.WORLD_NAME + "]");
+							return true;
+						}
 					}
 				}
 			}
