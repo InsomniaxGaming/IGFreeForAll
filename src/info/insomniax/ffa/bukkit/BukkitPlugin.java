@@ -33,20 +33,33 @@ public class BukkitPlugin extends JavaPlugin{
 	{
 		if(cmd.getName().equalsIgnoreCase("ffa"))
 		{
+			if(FFA.WORLD_NAME == null)
+			{
+				sender.sendMessage("No current world is set. Please call our staff an array of profanities until they do something about it.");
+				return true;
+			}
 			if(args.length == 0)
 			{
 				if(FFA.ONLINE_WARRIORS.contains(sender.getName()))
 				{
-					// They're too much of a wanker to enjoy our endearing bloodbath. Get their sorry ass out of here
-					FFA.ONLINE_WARRIORS.remove(sender.getName());
-					//TODO Remove player from FFA world, give him all his old shit, etc etc
+					if(Permissions.has((Player)sender, Permissions.FFAPerm.LEAVE))
+					{
+						// They're too much of a wanker to enjoy our endearing bloodbath. Get their sorry ass out of here
+						FFA.ONLINE_WARRIORS.remove(sender.getName());
+						//TODO Remove player from FFA world, give him all his old shit, etc etc
+						return true;
+					}
 				}
 				else
 				{
-					// This player has a death wish.. GIVE THEM WHAT THEY WANT!
-					FFA.ONLINE_WARRIORS.add(sender.getName());
-					sender.sendMessage(summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(sender.getName()));
-					//TODO save sender's inv, location, and any other relevant info
+					if(Permissions.has((Player)sender, Permissions.FFAPerm.JOIN))
+					{
+						// This player has a death wish.. GIVE THEM WHAT THEY WANT!
+						FFA.ONLINE_WARRIORS.add(sender.getName());
+						sender.sendMessage(summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(sender.getName()));
+						//TODO save sender's inv, location, and any other relevant info
+						return true;
+					}
 				}
 			}
 			if(args.length > 1)
