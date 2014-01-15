@@ -20,45 +20,66 @@ public class BukkitPlugin extends JavaPlugin{
 	World ffaWorld;
 	Permissions permissions;
 	
+	@Override
 	public void onEnable()
 	{
-		ffaWorld = Bukkit.getWorld(FFA.WORLD_NAME);
+		this.saveDefaultConfig();
+		
+		if(FFA.WORLD_NAME != null)
+			ffaWorld = Bukkit.getWorld(FFA.WORLD_NAME);
+		
 		this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		
 		permissions = new Permissions(this);
-		permissions.setupPermissions();
+		System.out.println(permissions == null);
+		if(!permissions.setupPermissions())
+		{
+			this.getLogger().warning("Failed to load permissions");
+		}
 	}
 	
+	@Override
+	public void onDisable()
+	{
+		this.saveConfig();
+	}
+	
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		if(cmd.getName().equalsIgnoreCase("ffa"))
 		{
-			if(FFA.WORLD_NAME == null)
-			{
-				sender.sendMessage("No current world is set. Please call our staff an array of profanities until they do something about it.");
-				return true;
-			}
 			if(args.length == 0)
 			{
-				if(FFA.ONLINE_WARRIORS.contains(sender.getName()))
+				if(sender instanceof Player)
 				{
-					if(Permissions.has((Player)sender, Permissions.FFAPerm.LEAVE))
+					if(FFA.WORLD_NAME == null)
 					{
-						// They're too much of a wanker to enjoy our endearing bloodbath. Get their sorry ass out of here
-						FFA.ONLINE_WARRIORS.remove(sender.getName());
-						//TODO Remove player from FFA world, give him all his old shit, etc etc
+						sendMessage(sender, "No current world is set. Please call our staff an array of profanities until they do something about it.");
 						return true;
 					}
-				}
-				else
-				{
-					if(Permissions.has((Player)sender, Permissions.FFAPerm.JOIN))
+					if(FFA.ONLINE_WARRIORS.contains(sender.getName()))
 					{
-						// This player has a death wish.. GIVE THEM WHAT THEY WANT!
-						FFA.ONLINE_WARRIORS.add(sender.getName());
-						sender.sendMessage(summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(sender.getName()));
-						//TODO save sender's inv, location, and any other relevant info
-						return true;
+						if(permissions.has((Player)sender, Permissions.FFAPerm.LEAVE))
+						{
+							// They're too much of a wanker to enjoy our endearing bloodbath. Get their sorry ass out of here
+							FFA.ONLINE_WARRIORS.remove(sender.getName());
+							//TODO Remove player from FFA world, give him all his old shit, etc etc
+							return true;
+						}
+					}
+					else
+					{
+						if(permissions.has((Player)sender, Permissions.FFAPerm.JOIN))
+						{
+							// This player has a death wish.. GIVE THEM WHAT THEY WANT!
+							FFA.ONLINE_WARRIORS.add(sender.getName());
+							sendMessage(sender, summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(sender.getName()));
+							this.getConfig().set("owh.ffa.players."+sender.getName(), ((Player)sender).getInventory());
+							this.spawnPlayer(sender.getName());
+							//TODO save sender's inv, location, and any other relevant info
+							return true;
+						}
 					}
 				}
 			}
@@ -69,18 +90,19 @@ public class BukkitPlugin extends JavaPlugin{
 						
 					if(args[1].equalsIgnoreCase("set"))
 					{
-						if(Permissions.has((Player)sender, Permissions.FFAPerm.WORLDSET))
+						if(permissions.has((Player)sender, Permissions.FFAPerm.WORLDSET))
 						{
 							if(args.length > 2)
 							{
 								//If player gave sufficient information, set world to the given argument
-								sender.sendMessage("FFA world set to " + args[2]);
-								FFA.WORLD_NAME = args[2];
+								sendMessage(sender, "FFA world set to " + args[2]);
+								setWorld(args[2]);
 							}
 							else
 							{
 								//If there is no data other than "set", set the world to the world the player is standing in
-								FFA.WORLD_NAME = ((Player)sender).getWorld().getName();
+								sendMessage(sender, "FFA world set to current world");
+								setWorld(((Player)sender).getWorld().getName());
 							}
 							
 							return true;
@@ -88,9 +110,9 @@ public class BukkitPlugin extends JavaPlugin{
 					}
 					else if(args[1].equalsIgnoreCase("get"))
 					{
-						if(Permissions.has((Player)sender, Permissions.FFAPerm.WORLDGET))
+						if(permissions.has((Player)sender, Permissions.FFAPerm.WORLDGET))
 						{
-							sender.sendMessage("Current FFA world is [" + FFA.WORLD_NAME + "]");
+							sendMessage(sender, "Current FFA world is " + FFA.WORLD_NAME);
 							return true;
 						}
 					}
@@ -99,6 +121,21 @@ public class BukkitPlugin extends JavaPlugin{
 		}
 		
 		return false;
+	}
+	
+	public void setWorld(String world)
+	{
+		FFA.WORLD_NAME = world;
+		ffaWorld = Bukkit.getWorld(world);
+	}
+	
+	/**Convenience method for determining whether to use sendMessage or logger, 'cuz I'm tired of dealing with it*/
+	public void sendMessage(CommandSender sender, String message)
+	{
+		if(sender instanceof Player)
+			sender.sendMessage(message);
+		else
+			this.getLogger().info(message);
 	}
 	
 	public static String summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(String bloke)

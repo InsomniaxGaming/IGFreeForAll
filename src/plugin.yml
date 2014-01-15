@@ -1,0 +1,14 @@
+name: FFA
+version: 9001
+main: info.insomniax.ffa.bukkit.BukkitPlugin
+depend: [Vault]
+
+commands:
+  ffa:
+    description: "Main Free-For-All command"
+    aliases: [freeforall]
+    usage: |
+      /<command> - Join/leave the FFA match.
+      /<command> world get - Gets the current FFA world
+      /<command> world set - Sets the current FFA world to the one you're in.
+      /<command> world set [world] - Sets the FFA world to the specified world name (Warning: Not for dumb-dumbs.)

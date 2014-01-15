@@ -19,7 +19,7 @@ public class Permissions {
 	
 	public static String permBase = "owh.ffa.base.";
 	
-	private static Permission permission = null;
+	private Permission permission = null;
     private static Economy economy = null;
     private static Chat chat = null;
     
@@ -59,12 +59,12 @@ public class Permissions {
         return (economy != null);
     }
     
-    public static boolean has(Player player, String node)
+    public boolean has(Player player, String node)
     {
     	return permission.has(player, node);
     }
     
-    public static boolean has(Player player, FFAPerm perm)
+    public boolean has(Player player, FFAPerm perm)
     {
     	return permission.has(player, permBase + perm.toString().toLowerCase());
     }
