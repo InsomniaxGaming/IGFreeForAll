@@ -1,4 +1,4 @@
-package info.insomniax.ffa.bukkit;
+package info.insomniax.ffa;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;

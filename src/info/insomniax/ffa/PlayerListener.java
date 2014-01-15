@@ -1,6 +1,6 @@
-package info.insomniax.ffa.bukkit;
+package info.insomniax.ffa;
 
-import info.insomniax.ffa.core.FFA;
+import info.insomniax.ffa.config.Configuration;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,18 +12,18 @@ public class PlayerListener implements Listener{
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
-		if(FFA.WARRIORS.contains(e.getPlayer().getName()))
+		if(Configuration.WARRIORS.contains(e.getPlayer().getName()))
 		{
-			FFA.ONLINE_WARRIORS.add(e.getPlayer().getName());
+			Configuration.ONLINE_WARRIORS.add(e.getPlayer().getName());
 		}		
 	}
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e)
 	{
-		if(FFA.WARRIORS.contains(e.getPlayer().getName()))
+		if(Configuration.WARRIORS.contains(e.getPlayer().getName()))
 		{
-			FFA.ONLINE_WARRIORS.remove(e.getPlayer().getName());
+			Configuration.ONLINE_WARRIORS.remove(e.getPlayer().getName());
 		}		
 	}
 }

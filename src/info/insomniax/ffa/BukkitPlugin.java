@@ -1,8 +1,8 @@
-package info.insomniax.ffa.bukkit;
+package info.insomniax.ffa;
 
 import java.util.Random;
 
-import info.insomniax.ffa.core.FFA;
+import info.insomniax.ffa.config.Configuration;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,8 +25,8 @@ public class BukkitPlugin extends JavaPlugin{
 	{
 		this.saveDefaultConfig();
 		
-		if(FFA.WORLD_NAME != null)
-			ffaWorld = Bukkit.getWorld(FFA.WORLD_NAME);
+		if(Configuration.WORLD_NAME != null)
+			ffaWorld = Bukkit.getWorld(Configuration.WORLD_NAME);
 		
 		this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		
@@ -53,17 +53,17 @@ public class BukkitPlugin extends JavaPlugin{
 			{
 				if(sender instanceof Player)
 				{
-					if(FFA.WORLD_NAME == null)
+					if(ffaWorld == null)
 					{
 						sendMessage(sender, "No current world is set. Please call our staff an array of profanities until they do something about it.");
 						return true;
 					}
-					if(FFA.ONLINE_WARRIORS.contains(sender.getName()))
+					if(Configuration.ONLINE_WARRIORS.contains(sender.getName()))
 					{
 						if(permissions.has((Player)sender, Permissions.FFAPerm.LEAVE))
 						{
 							// They're too much of a wanker to enjoy our endearing bloodbath. Get their sorry ass out of here
-							FFA.ONLINE_WARRIORS.remove(sender.getName());
+							Configuration.ONLINE_WARRIORS.remove(sender.getName());
 							//TODO Remove player from FFA world, give him all his old shit, etc etc
 							return true;
 						}
@@ -73,7 +73,7 @@ public class BukkitPlugin extends JavaPlugin{
 						if(permissions.has((Player)sender, Permissions.FFAPerm.JOIN))
 						{
 							// This player has a death wish.. GIVE THEM WHAT THEY WANT!
-							FFA.ONLINE_WARRIORS.add(sender.getName());
+							Configuration.ONLINE_WARRIORS.add(sender.getName());
 							sendMessage(sender, summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(sender.getName()));
 							this.getConfig().set("owh.ffa.players."+sender.getName(), ((Player)sender).getInventory());
 							this.spawnPlayer(sender.getName());
@@ -112,7 +112,7 @@ public class BukkitPlugin extends JavaPlugin{
 					{
 						if(permissions.has((Player)sender, Permissions.FFAPerm.WORLDGET))
 						{
-							sendMessage(sender, "Current FFA world is " + FFA.WORLD_NAME);
+							sendMessage(sender, "Current FFA world is " + Configuration.WORLD_NAME);
 							return true;
 						}
 					}
@@ -125,7 +125,7 @@ public class BukkitPlugin extends JavaPlugin{
 	
 	public void setWorld(String world)
 	{
-		FFA.WORLD_NAME = world;
+		Configuration.WORLD_NAME = world;
 		ffaWorld = Bukkit.getWorld(world);
 	}
 	
@@ -142,9 +142,9 @@ public class BukkitPlugin extends JavaPlugin{
 	{
 		String beenWatchingTooManyBritishShowsLately = "";
 		
-		for(String warrior : FFA.ONLINE_WARRIORS)
+		for(String warrior : Configuration.ONLINE_WARRIORS)
 		{
-			if(withinDist(bloke, warrior, FFA.RADAR_DISTANCE))
+			if(withinDist(bloke, warrior, Configuration.RADAR_DISTANCE))
 			{
 				//TODO retrieve warrior's direction relative to "bloke" and include it in my oddly named string
 				String direction = "[direction]";
@@ -197,16 +197,18 @@ public class BukkitPlugin extends JavaPlugin{
 	public int findValidY(double x, double z)
 	{
 		int validY = -1;
-		Location loc = new Location(ffaWorld, x, 0, z);
+		Location loc = new Location(ffaWorld, x, 256, z);
 		
 		for(int y = 0; y < 255; y++)
 		{
-			if(loc.getBlock().getType() == Material.AIR && loc.getBlock().getRelative(0,1,0).getType() == Material.AIR)
+			if(loc.getBlock().getType() == Material.AIR && loc.getBlock().getRelative(0,1,0).getType() == Material.AIR && !loc.getBlock().getRelative(0, -1, 0).isLiquid() && loc.getBlock().getRelative(0, -1, 0).getType() != Material.AIR)
 			{
 				validY = (int)loc.getY();
 				break;
 			}
-			loc.add(0,1,0);
+
+			//Top-down iteration to avoid cave-spawning as much as possible
+			loc.add(0,-1,0);
 		}
 		
 		return validY;
