@@ -1,6 +1,6 @@
 name: FFA
 version: 9001
-main: info.insomniax.ffa.bukkit.BukkitPlugin
+main: info.insomniax.ffa.BukkitPlugin
 depend: [Vault]
 
 commands:

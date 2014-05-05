@@ -5,6 +5,7 @@ import java.util.Random;
 import info.insomniax.ffa.config.Configuration;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -31,11 +32,9 @@ public class BukkitPlugin extends JavaPlugin{
 		this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		
 		permissions = new Permissions(this);
-		System.out.println(permissions == null);
+		
 		if(!permissions.setupPermissions())
-		{
 			this.getLogger().warning("Failed to load permissions");
-		}
 	}
 	
 	@Override
@@ -63,7 +62,7 @@ public class BukkitPlugin extends JavaPlugin{
 						if(permissions.has((Player)sender, Permissions.FFAPerm.LEAVE))
 						{
 							// They're too much of a wanker to enjoy our endearing bloodbath. Get their sorry ass out of here
-							Configuration.ONLINE_WARRIORS.remove(sender.getName());
+							removeWarrior(sender.getName());
 							//TODO Remove player from FFA world, give him all his old shit, etc etc
 							return true;
 						}
@@ -73,8 +72,11 @@ public class BukkitPlugin extends JavaPlugin{
 						if(permissions.has((Player)sender, Permissions.FFAPerm.JOIN))
 						{
 							// This player has a death wish.. GIVE THEM WHAT THEY WANT!
-							Configuration.ONLINE_WARRIORS.add(sender.getName());
+							addWarrior(sender.getName());
+							
 							sendMessage(sender, summonAListOfPlayersWithinTheRequiredVascinityAsWellAsTheirDirectionRelativeToSomeSpecifiedBloke(sender.getName()));
+							sendMessage(sender, ChatColor.GOLD + "MAY THE BLOODSHED BEGIN!");
+							
 							this.getConfig().set("owh.ffa.players."+sender.getName(), ((Player)sender).getInventory());
 							this.spawnPlayer(sender.getName());
 							//TODO save sender's inv, location, and any other relevant info
@@ -127,6 +129,18 @@ public class BukkitPlugin extends JavaPlugin{
 	{
 		Configuration.WORLD_NAME = world;
 		ffaWorld = Bukkit.getWorld(world);
+	}
+	
+	public void addWarrior(String name)
+	{
+		Configuration.ONLINE_WARRIORS.add(name);
+		Configuration.WARRIORS.add(name);
+	}
+	
+	public void removeWarrior(String name)
+	{
+		Configuration.ONLINE_WARRIORS.remove(name);
+		Configuration.WARRIORS.remove(name);
 	}
 	
 	/**Convenience method for determining whether to use sendMessage or logger, 'cuz I'm tired of dealing with it*/
